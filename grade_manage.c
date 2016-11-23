@@ -3,11 +3,24 @@
 #include <stdlib.h>
 #include "grade_manage.h"
 
-/*compare function*/
 inline int   Ascending(float a, float b) {return a>b?1:0;}
 inline int   Descending(float a, float b) {return a<b?1:0;}
 
-/*func*/
+void distribute(Stu **stu, int n)
+{
+	int i;
+	*stu = (Stu *)calloc(sizeof(Stu),1);
+	Stu *stuTail=*stu;
+	for(i=0;i<n-1;i++)
+	{
+		stuTail->next=(Stu *)calloc(sizeof(Stu),1);
+		stuTail=stuTail->next;
+	}
+	stuTail->next=NULL;
+}
+
+/*---IO函数---*/
+/*显示菜单*/
 int Menu(void)
 {
 	printf("Management for Students' scores\n");
@@ -15,7 +28,7 @@ int Menu(void)
 	printf("2.Caculate total and average score of every course\n");
 	printf("3.Caculate total and average score of every studen\n");
 	printf("4.Sort in descending order by score\n");
-	printf("5.Sort in ascending order by score");
+	printf("5.Sort in ascending order by score\n");
 	printf("6.Sort in ascending order by number\n");
 	printf("7.Sort in dictionary order by name\n");
 	printf("8.Search by number\n");
@@ -28,39 +41,47 @@ int Menu(void)
 	printf("Please Input your choice:\n");
    return 0;
 }
-/*func1*/
-/*read score*/
-void  ReadScore(Stu *stu, int n, int *m)
+
+/*从键盘读取成绩*/
+void  ReadScore(Stu *stu, int *m)
 {
-	int i,j;
+	int j;
 	do
 	{
 		printf("Input course number(m<=6):\n");
 		scanf("%d", m);
 	}while(*m<0 || *m>6);
+
 	printf("Input student's ID, name and score:\n");
-	for(i=0;i<n;i++)
+	for(;stu!=NULL;stu=stu->next)
 	{
 		scanf("%ld%s", &stu->num,stu->name); /*get student id and name*/
 		/*read score of each student*/
 		for(j=0;j<*m;j++)
 			scanf("%f", &stu->score[j]);
-		stu=stu->next;
 	}
 }
 
-/*func11*/
-void  PrintScore(Stu *stu, int n, int m)
+/*在屏幕上打印全班成绩*/
+void  PrintScore(Stu *stu,int m)
 {
-	int i;
-	for(i=0;i<n;i++)
-	{
+	for(;stu!=NULL;stu=stu->next)
 		display(stu, m);
-		stu=stu->next;
-	}
 }
 
-/*func12*/
+/*显示某学生成绩情况*/
+void display(Stu *stu, int m)
+{
+	int j;
+	printf("%10ld%10s\t", stu->num, stu->name);
+	for(j=0;j<m;j++)
+	{
+		printf("%.0f\t", stu->score[j]);
+	}
+	printf("%.0f\t%.0f\n", stu->sum, stu->aver );
+}
+
+/*将数据写入文件*/
 void  WritetoFile(Stu *stu,int n, int m)
 {
 	FILE  *fp;
@@ -87,11 +108,12 @@ void  WritetoFile(Stu *stu,int n, int m)
 	fclose(fp);
 }
 
-/*func13*/
+/*从文件中读取成绩*/
 void  ReadfromFile(Stu *stu,int *n, int *m)
 {
 	FILE *fp;
 	int i,j;
+	int temp = *n;
 	if((fp = fopen("student.txt", "r")) == NULL)
 	{ 	
 		printf(" Fail to open student.txt \n");
@@ -99,7 +121,14 @@ void  ReadfromFile(Stu *stu,int *n, int *m)
 	}
 	else
 	{
+
 		fscanf(fp, "%d\t%d\n",n, m);
+		if(temp<*n)
+		{
+			free(stu);
+			distribute(stu, *n);
+		}
+
 		for(i=0;i<*n;i++)
 		{
 			fscanf(fp, "%10ld%10s\t", &stu->num, stu->name);
@@ -114,23 +143,23 @@ void  ReadfromFile(Stu *stu,int *n, int *m)
 	}
 }
 
-/*count average*/
-void  AverSumofEveryStudent(Stu *stu, int n, int m)
+/*---计算平均成绩的函数---*/
+/*计算每个学生的平均成绩*/
+void  AverSumofEveryStudent(Stu *stu, int m)
 {
-	Stu *temp=stu;
-	int i,j;
-	for(i=0;i<n;++i)
+	int j;
+	for(;stu!=NULL;stu=stu->next)
 	{
 		for(j=0;j<m;j++)
 		{
-			temp->sum+=temp->score[j];
+			stu->sum+=stu->score[j];
 		}
-		temp->aver=temp->sum/m;
-		printf("student %ld: sum=%.0f,aver=%.0f\n", temp->num, temp->sum, temp->aver);
-		temp=temp->next;
+		stu->aver=stu->sum/m;
+		printf("student %ld: sum=%.0f,aver=%.0f\n", stu->num, stu->sum, stu->aver);
 	}
 }
 
+/*计算没门课的平均成绩*/
 void  AverSumofEveryCourse(Stu *stu, int n, int m)
 {
 	int i,j;
@@ -147,7 +176,8 @@ void  AverSumofEveryCourse(Stu *stu, int n, int m)
 	}
 }
 
-/*Sort*/
+/*---排序函数---*/
+/*排序函数模板*/
 void sort(Stu *head, int (*compare)(float,float))
 {
 	Stu  *i,*j;
@@ -165,6 +195,7 @@ void sort(Stu *head, int (*compare)(float,float))
 	}
 }
 
+/*交换学生数据*/
 void swap(Stu *stu1, Stu *stu2)
 {
 	Stu temp;
@@ -175,12 +206,14 @@ void swap(Stu *stu1, Stu *stu2)
 	stu1->next=stu2->next;
 	stu2->next=temp.next;
 }
+
+/*按分数排序*/
 void  SortbyScore(Stu *stuHead,int  (*compare)(float,float) )
 {
 	sort(stuHead,compare);
 }
 
-
+/*按学号排序*/
 void  AsSortbyNum(Stu *stu)
 {
 	Stu  *i,*j;
@@ -198,6 +231,7 @@ void  AsSortbyNum(Stu *stu)
 	}
 }
 
+/*按名字排序*/
 void  SortbyName(Stu *stu)
 {
 	Stu  *i,*j;
@@ -215,7 +249,8 @@ void  SortbyName(Stu *stu)
 	}
 }
 
-/*search*/
+/*---搜索函数---*/
+/*按学号搜索*/
 void  SearchbyNum(Stu *stu, int m)
 {
 	long search;
@@ -228,6 +263,8 @@ void  SearchbyNum(Stu *stu, int m)
 	else
 		display(stu, m);
 }
+
+/*按姓名搜索*/
 void  SearchbyName(Stu *stu, int m)
 {
 	char name[30];
@@ -241,7 +278,8 @@ void  SearchbyName(Stu *stu, int m)
 		display(stu, m);
 }
 
-/*analize*/
+/*---统计函数---*/
+/*分析成绩状况*/
 void  StatisticAnalysis(Stu *stu,  int m)
 {
 	Grade *grade = calloc(sizeof(Grade), m);
@@ -272,6 +310,7 @@ void  StatisticAnalysis(Stu *stu,  int m)
 	}
 
 }
+/*计算各个分数段学生比例*/
 void countRate(Grade *course)
 {
 	int sum=0;
@@ -283,9 +322,9 @@ void countRate(Grade *course)
 	course->eRate = (float)course->e/sum*100;
 	course->fRate = (float)course->f/sum*100;
 }
+/*打印分析结果*/
 void showAnalize(Grade *course, int num)
 {
-	int i;
 	printf("For course %d:\n", num);
 	printf("<60\t%d\t%.2f%%\n", course->f, course->fRate );
 	printf("60-69\t%d\t%.2f%%\n", course->e, course->eRate );
@@ -295,15 +334,5 @@ void showAnalize(Grade *course, int num)
 	printf("100\t%d\t%.2f%%\n", course->a, course->aRate );
 }
 
-/*display*/
-void display(Stu *stu, int m)
-{
-	int j;
-	printf("%10ld%10s\t", stu->num, stu->name);
-	for(j=0;j<m;j++)
-	{
-		printf("%.0f\t", stu->score[j]);
-	}
-	printf("%.0f\t%.0f\n", stu->sum, stu->aver );
-}
+
 

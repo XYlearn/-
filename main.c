@@ -4,7 +4,7 @@
 
 int main()
 {
-	Stu *stu, *stuTail;
+	Stu *stu;
 	int n=0;	/*stuNum*/
 	int m=0;		/*courseNum*/
 	int selection=0,i;
@@ -18,16 +18,8 @@ int main()
 		}
 		else break;
 	}while(1);
-	/*distribute memory for Stu */
-	stu = (Stu *)calloc(sizeof(Stu),1);
-	Stu *temp=stu;
-	stuTail=stu;
-	for(i=0;i<n-1;i++)
-	{
-		stuTail->next=(Stu *)calloc(sizeof(Stu),1);
-		stuTail=stuTail->next;
-	}
-	stuTail->next=NULL;
+	
+	distribute(&stu, n);
 
 	do
 	{
@@ -49,13 +41,13 @@ int main()
 			printf("End of program!\n");
 			exit(0);
 		case 1:
-			ReadScore(stu, n, &m);
+			ReadScore(stu, &m);
 			break;
 		case 2:
-			AverSumofEveryCourse(stu,n ,m);
+			AverSumofEveryCourse(stu, n, m);
 			break;
 		case 3:
-			AverSumofEveryStudent(stu,n, m);
+			AverSumofEveryStudent(stu, m);
 			break;
 		case 4:
 			SortbyScore(stu, Descending);
@@ -79,7 +71,7 @@ int main()
 			StatisticAnalysis(stu, m);
 			break;
 		case 11:
-			PrintScore(stu, n, m);
+			PrintScore(stu, m);
 			break;
 		case 12:
 			WritetoFile(stu,n, m);
