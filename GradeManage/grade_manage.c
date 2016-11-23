@@ -6,6 +6,7 @@
 inline int   Ascending(float a, float b) {return a>b?1:0;}
 inline int   Descending(float a, float b) {return a<b?1:0;}
 
+/*内存分配*/
 void distribute(Stu **stu, int n)
 {
 	int i;

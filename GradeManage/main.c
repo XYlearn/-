@@ -18,65 +18,67 @@ int main()
 		}
 		else break;
 	}while(1);
-	
+
+	/*初始化分配内存*/
 	distribute(&stu, n);
 
+   /*进入选择菜单*/
 	do
 	{
-		Menu();
-		fflush(stdin);
+		Menu();       /*打印菜单*/
+		fflush(stdin);  /*刷新缓冲区*/
 		scanf("%d", &selection);
 
-		/*make sure the input is valid*/
+		/*确保选择正确*/
 		if (selection<0 || selection>13)
 		{
 			printf("Input error!\n");
 			continue;
 		}
 
-		/*get into selection*/
+		/*主体*/
 		switch(selection)
 		{
-		case 0:
+		case 0:/*结束程序*/
 			printf("End of program!\n");
 			exit(0);
-		case 1:
+		case 1:/*从键盘读取*/
 			ReadScore(stu, &m);
 			break;
-		case 2:
+		case 2:/*计算各课程平均成绩与总成绩*/
 			AverSumofEveryCourse(stu, n, m);
 			break;
-		case 3:
+		case 3:/*计算每个学生的平均成绩与总成绩*/
 			AverSumofEveryStudent(stu, m);
 			break;
-		case 4:
+		case 4:/*根据总分降序排序*/
 			SortbyScore(stu, Descending);
 			break;
-		case 5:
+		case 5:/*根据总分升序排序*/
 			SortbyScore(stu,Ascending);
 			break;
-		case 6:
+		case 6:/*根据学号升序排序*/
 			AsSortbyNum(stu);
 			break;
-		case 7:
+		case 7:/*根据名字在字母表中顺序排序*/
 			SortbyName(stu);
 			break;
-		case 8:
+		case 8:/*根据学号查询*/
 			SearchbyNum(stu, m);
 			break;
-		case 9:
+		case 9:/*根据名字查询*/
 			SearchbyName(stu, m);
 			break;
-		case 10:
+		case 10:/*数据分析*/
 			StatisticAnalysis(stu, m);
 			break;
-		case 11:
+		case 11:/*打印成绩*/
 			PrintScore(stu, m);
 			break;
-		case 12:
+		case 12:/*写入程序*/
 			WritetoFile(stu,n, m);
 			break;
-		case 13:
+		case 13:/*从程序读取*/
 			ReadfromFile(stu,&n, &m);
 			break;
 		}
