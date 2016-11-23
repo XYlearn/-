@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -7,11 +6,11 @@
 inline int   Ascending(float a, float b) {return a>b?1:0;}
 inline int   Descending(float a, float b) {return a<b?1:0;}
 
-void distribute(Stu *stu, int n)
+void distribute(Stu **stu, int n)
 {
 	int i;
-	stu = (Stu *)calloc(sizeof(Stu),1);
-	Stu *stuTail=stu;
+	*stu = (Stu *)calloc(sizeof(Stu),1);
+	Stu *stuTail=*stu;
 	for(i=0;i<n-1;i++)
 	{
 		stuTail->next=(Stu *)calloc(sizeof(Stu),1);
@@ -29,7 +28,7 @@ int Menu(void)
 	printf("2.Caculate total and average score of every course\n");
 	printf("3.Caculate total and average score of every studen\n");
 	printf("4.Sort in descending order by score\n");
-	printf("5.Sort in ascending order by score");
+	printf("5.Sort in ascending order by score\n");
 	printf("6.Sort in ascending order by number\n");
 	printf("7.Sort in dictionary order by name\n");
 	printf("8.Search by number\n");
@@ -98,7 +97,7 @@ void  WritetoFile(Stu *stu,int n, int m)
 		for(i=0;i<n;i++)
 		{
 			fprintf(fp, "%10ld%10s\t", stu->num, stu->name);
-			for(j=0;j<m;j++)
+			for(j=0;j<m;j++) 	
 			{
 				fprintf(fp,"%.0f\t", stu->score[j]);
 			}
@@ -116,7 +115,7 @@ void  ReadfromFile(Stu *stu,int *n, int *m)
 	int i,j;
 	int temp = *n;
 	if((fp = fopen("student.txt", "r")) == NULL)
-	{
+	{ 	
 		printf(" Fail to open student.txt \n");
 		return ;
 	}
@@ -157,7 +156,6 @@ void  AverSumofEveryStudent(Stu *stu, int m)
 		}
 		stu->aver=stu->sum/m;
 		printf("student %ld: sum=%.0f,aver=%.0f\n", stu->num, stu->sum, stu->aver);
-		stu=stu->next;
 	}
 }
 

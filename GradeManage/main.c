@@ -18,8 +18,8 @@ int main()
 		}
 		else break;
 	}while(1);
-
-	distribute(stu, n);
+	
+	distribute(&stu, n);
 
 	do
 	{

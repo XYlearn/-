@@ -51,6 +51,6 @@ void showAnalize(Grade *course, int num);
 int   Ascending(float a, float b) ;
 int   Descending(float a, float b) ;
 
-void distribute(Stu *stu, int n);
+void distribute(Stu **stu, int n);
 
 #endif
